@@ -117,30 +117,6 @@ async function ask() {
     input.value = "";
 }
 
-  const q = document.getElementById("question").value.trim();
-  if (!q) return;
-  let answer = "";
-
-  if (/hello|hi jarvis|hey jarvis/i.test(q)) {
-    answer = "Hello. JARVIS systems are online and ready.";
-  } else if (/your name|who are you/i.test(q)) {
-    answer = "I am JARVIS, your personal assistant interface.";
-  } else if (/time/i.test(q)) {
-    answer = "The time on your device is " +
-      new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) + ".";
-  } else if (/date|today/i.test(q)) {
-    answer = "Today is " + new Date().toLocaleDateString() + ".";
-  } else if (/help/i.test(q)) {
-    answer = "I can respond to greetings, tell you the time and date, and speak my replies. My AI brain will be connected in a later step.";
-  } else {
-    answer = "I received your message: " + q +
-      ". My advanced AI connection has not been configured yet.";
-  }
-
-  reply.textContent = answer;
-  speak(answer);
-  document.getElementById("question").value = "";
-}
 
 function listen() {
   const Recognition = window.SpeechRecognition ||
