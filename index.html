@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; background: #05080d;
+  color: #e9f5ff; font-family: -apple-system, sans-serif;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 24px;
+}
+h1 { letter-spacing: 8px; color: #ff9d42; margin-bottom: 5px; }
+.sub { color: #72879b; font-size: 12px; letter-spacing: 3px; }
+.core {
+  width: 190px; height: 190px; border-radius: 50%;
+  margin: 38px auto 24px; display: grid; place-items: center;
+  border: 2px solid #ff9d42;
+  box-shadow: 0 0 25px #ff9d4244, inset 0 0 30px #ff9d4222;
+  position: relative;
+}
+.core::before, .core::after {
+  content: ""; position: absolute; border-radius: 50%;
+  border: 1px solid #ff9d4288;
+}
+.core::before { inset: 12px; }
+.core::after { inset: 28px; }
+.core span { font-size: 46px; color: #ffb15c; z-index: 1; }
+.status { color: #ffb15c; font-size: 13px; letter-spacing: 2px; }
+.panel {
+  width: 100%; max-width: 420px; background: #101722;
+  border: 1px solid #263748; border-radius: 18px;
+  padding: 18px; margin-top: 25px;
+}
+#reply { line-height: 1.6; min-height: 48px; color: #d4e4f2; }
+input {
+  width: 100%; padding: 14px; border-radius: 12px;
+  border: 1px solid #34495c; background: #080e16;
+  color: white; font-size: 16px; margin-top: 10px;
+}
+button {
+  border: 1px solid #ff9d42; background: #ff9d42;
+  color: #111; border-radius: 12px; padding: 13px 18px;
+  font-size: 15px; font-weight: 600; margin-top: 10px;
+}
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.actions button:last-child { background: transparent; color: #ffb15c; }
+footer { color: #526477; font-size: 11px; margin-top: 25px; }
+</style>
+</head>
+<body>
+<h1>J.A.R.V.I.S.</h1>
+<div class="sub">PERSONAL AI INTERFACE</div>
+
+<div class="core"><span>✦</span></div>
+<div class="status" id="status">SYSTEM ONLINE</div>
+
+<div class="panel">
+  <div id="reply">Good evening. JARVIS interface initialized. How may I assist you?</div>
+  <input id="question" placeholder="Type a message..." />
+  <div class="actions">
+    <button onclick="ask()">Send</button>
+    <button onclick="listen()">🎙 Speak</button>
+  </div>
+</div>
+<footer>JARVIS v1.0 · VOICE INTERFACE</footer>
+
+<script>
+const reply = document.getElementById("reply");
+const statusText = document.getElementById("status");
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const voice = new SpeechSynthesisUtterance(text);
+  voice.rate = 0.95;
+  speechSynthesis.speak(voice);
+}
+
+function ask() {
+  const q = document.getElementById("question").value.trim();
+  if (!q) return;
+  let answer = "";
+
+  if (/hello|hi jarvis|hey jarvis/i.test(q)) {
+    answer = "Hello. JARVIS systems are online and ready.";
+  } else if (/your name|who are you/i.test(q)) {
+    answer = "I am JARVIS, your personal assistant interface.";
+  } else if (/time/i.test(q)) {
+    answer = "The time on your device is " +
+      new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) + ".";
+  } else if (/date|today/i.test(q)) {
+    answer = "Today is " + new Date().toLocaleDateString() + ".";
+  } else if (/help/i.test(q)) {
+    answer = "I can respond to greetings, tell you the time and date, and speak my replies. My AI brain will be connected in a later step.";
+  } else {
+    answer = "I received your message: " + q +
+      ". My advanced AI connection has not been configured yet.";
+  }
+
+  reply.textContent = answer;
+  speak(answer);
+  document.getElementById("question").value = "";
+}
+
+function listen() {
+  const Recognition = window.SpeechRecognition ||
+                      window.webkitSpeechRecognition;
+  if (!Recognition) {
+    reply.textContent = "Voice recognition is unavailable in this preview. Try opening the page in Safari.";
+    return;
+  }
+  const recognition = new Recognition();
+  recognition.lang = "en-US";
+  recognition.onstart = () => statusText.textContent = "LISTENING...";
+  recognition.onresult = event => {
+    document.getElementById("question").value =
+      event.results[0][0].transcript;
+    ask();
+  };
+  recognition.onerror = () => {
+    reply.textContent = "Microphone access failed. Check your browser permissions.";
+    statusText.textContent = "SYSTEM ONLINE";
+  };
+  recognition.onend = () => statusText.textContent = "SYSTEM ONLINE";
+  recognition.start();
+}
+</script>
+</body>
+</html>
